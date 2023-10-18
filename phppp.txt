@@ -1,0 +1,65 @@
+<?php
+
+$a = $_GET['nombre'];
+$b = $_GET['clave'];
+
+echo autenticar("$a", "$b");
+
+function autenticar($nombre, $password)
+{
+  
+    $conexion = new mysqli("localhost", "root", "root", "db_factura");
+
+    $salida = "";
+    $imprimir = "SELECT * FROM usuario WHERE nombre='$nombre' AND ID_usuario='$password'";
+    $sql = $conexion->query($imprimir);
+    if ($datos = $sql->fetch_object()) {
+        $salida .= "AUTENTICADO CORRECTAMENTE";
+    } else {
+         header("location:error.php");
+    }
+
+  
+    $conexion->close();
+
+    return $salida;
+
+   
+}
+?>
+---------------------------------------------------------------------------------------------------------------
+
+
+
+<?php
+$a = $_GET['nombre'];
+$b = $_GET['clave'];
+
+$usuario = autenticar($a, $b);
+
+if ($usuario !== false) {
+    echo "Nombre: " . $usuario->nombre . "<br><br>";
+    echo "ID de Usuario: " . $usuario->ID_usuario . "<br><br>";
+    echo "edad: " . $usuario->edad . "<br><br>";
+    echo "telefono: " . $usuario->telefono . "<br><br>";
+} else {
+    header("location:error.php");
+}
+
+function autenticar($nombre, $password)
+{
+    $conexion = new mysqli("localhost", "root", "root", "db_factura");
+
+    $imprimir = "SELECT * FROM usuario WHERE nombre='$nombre' AND ID_usuario='$password'";
+    $sql = $conexion->query($imprimir);
+
+    if ($sql->num_rows > 0) {
+        $usuario = $sql->fetch_object();
+        $conexion->close();
+        return $usuario;
+    } else {
+        $conexion->close();
+        return false;
+    }
+}
+?>
